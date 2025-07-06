@@ -109,7 +109,7 @@ export default function HomePage() {
             Dacă vorbim de un asistent AI, el este la fel de bun pe cât sunt resursele cu care este alimentat. A-l hrăni cu rezumate simple sau cu tone de cărți are ca efect fie să nu îl folosești la întregul său potențial, fie să îl copleșești cu zgomot și gunoi informațional.
           </p>
           <p>
-            <strong>Knowledge Architect</strong> s-a născut din această nevoie. Nu este un simplu "summarizer". Aplicația folosește un metaprompt avansat și un proces de raționament AI iterativ pentru a acționa ca un veritabil Arhitect de Cunoștințe. Acesta citește, analizează și filtrează materialul sursă prin șase lentile critice:
+            <strong>Knowledge Architect</strong> s-a născut din această nevoie. Nu este un simplu "summarizer". Aplicația folosește un metaprompt avansat și un proces de raționament AI iterativ pentru a acționa ca un veritabil Arhitect de cunoștințe. Acesta citește, analizează și filtrează materialul sursă prin șase lentile critice:
           </p>
           <ul className="feature-list">
             <li>modele mentale</li>
@@ -133,7 +133,7 @@ export default function HomePage() {
                 </li>
                 <li>
                     <strong>Pornește Arhitectul</strong>
-                    Apasă pe butonul ”Construiește resursa” și în scurt timp AI-ul analizează, iterează și construiește baza ta de cunoștințe, pas cu pas.
+                    Apasă pe butonul "Construiește resursa" și în scurt timp AI-ul analizează, iterează și construiește baza ta de cunoștințe, pas cu pas.
                 </li>
                 <li>
                     <strong>Interacționează și explorează</strong>
