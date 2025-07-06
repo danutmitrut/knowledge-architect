@@ -76,10 +76,21 @@ export async function POST(request) {
     }
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
-    const finalPrompt = `${metaprompt}\n\n---\n\nTEXT SURSĂ DE ANALIZAT:\n\n${textContent}`;
+
+    let finalPrompt = `${metaprompt}\n\n---\n\nTEXT SURSĂ DE ANALIZAT:\n\n${textContent}`;
+
+    // --- MODIFICARE CHEIE: Sanitizarea promptului final ---
+    // Înlocuiește caracterele "Line Separator" (U+2028) și "Paragraph Separator" (U+2029)
+    // cu un caracter standard de linie nouă (\n) pentru a preveni erorile de tip ByteString
+    // care apar atunci când SDK-ul Google AI încearcă să proceseze aceste caractere non-standard.
+    // Aceasta este corectura directă pentru eroarea "character ... has a value of 8232".
+    finalPrompt = finalPrompt.replace(/\u2028|\u2029/g, '\n');
+    // --- SFÂRȘITUL MODIFICĂRII ---
+
     const result = await model.generateContent(finalPrompt);
     const response = await result.response;
     const aiTextResponse = response.text();
+
     return NextResponse.json({ success: true, data: aiTextResponse });
   } catch (error) {
     console.error("Eroare în /api/generate:", error);
