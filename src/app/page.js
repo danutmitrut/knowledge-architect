@@ -1,4 +1,4 @@
-// Fișier: src/app/page.js - VERSIUNE FINALĂ CU TEXT COMPLET
+// Fișier: src/app/page.js - VERSIUNE FINALĂ ȘI CURĂȚATĂ PENTRU PUBLICARE
 
 'use client';
 
@@ -101,7 +101,7 @@ export default function HomePage() {
 
       <main className="container">
         <section id="explanation">
-          <h3>De la informație la înțelepciune acționabilă</h3>
+          <h3>De la Informație la Înțelepciune Acționabilă</h3>
           <p>
             Trăim în era informației, dar nu suntem conștienți de puterea și valoarea ei. Cărțile, documentele și articolele conțin cunoștințe valoroase, dar extragerea lor manuală este un proces lent și ineficient. Rezumatele standard oferă o imagine de suprafață, omițând esența: modelele mentale, principiile fundamentale și tehnicile cu adevărat acționabile.
           </p>
@@ -109,7 +109,7 @@ export default function HomePage() {
             Dacă vorbim de un asistent AI, el este la fel de bun pe cât sunt resursele cu care este alimentat. A-l hrăni cu rezumate simple sau cu tone de cărți are ca efect fie să nu îl folosești la întregul său potențial, fie să îl copleșești cu zgomot și gunoi informațional.
           </p>
           <p>
-            <strong>Knowledge Architect</strong> s-a născut din această nevoie. Nu este un simplu "summarizer". Aplicația folosește un metaprompt avansat și un proces de raționament AI iterativ pentru a acționa ca un veritabil Arhitect de cunoștințe. Acesta citește, analizează și filtrează materialul sursă prin șase lentile critice:
+            <strong>Knowledge Architect</strong> s-a născut din această nevoie. Nu este un simplu "summarizer". Aplicația folosește un metaprompt avansat și un proces de raționament AI iterativ pentru a acționa ca un veritabil Arhitect de Cunoștințe. Acesta citește, analizează și filtrează materialul sursă prin șase lentile critice:
           </p>
           <ul className="feature-list">
             <li>modele mentale</li>
@@ -133,14 +133,15 @@ export default function HomePage() {
                 </li>
                 <li>
                     <strong>Pornește Arhitectul</strong>
-                    Apasă pe butonul "Construiește resursa" și în scurt timp AI-ul analizează, iterează și construiește baza ta de cunoștințe, pas cu pas.
+                    {/* Aici am folosit apostrofuri, care sunt sigure */}
+                    Apasă pe butonul 'Construiește resursa' și în scurt timp AI-ul analizează, iterează și construiește baza ta de cunoștințe, pas cu pas.
                 </li>
                 <li>
                     <strong>Interacționează și explorează</strong>
-                    Când procesul este încheiat se va deschide o pagină unde resursa ta este gata de a fi utilizată. Mai mult ai la dispoziție un chat de dialog, dacă vrei să dezvolți o anumită idee din material. Ai va dialoga cu tine doar în contextul informațiilor analizate.
+                    Când procesul este gata se va deschide o pagină unde resursa ta este gata de a fi utilizată. Mai mult ai la dispoziție un chat de dialog, dacă vrei să dezvolți o anumită idee din material. Ai va dialoga cu tine doar în contextul informațiilor analizate.
                 </li>
                  <li>
-                    <strong>Descarcă și integrează</strong>
+                    <strong>Descarcă și Integrează</strong>
                     La final, descarcă fișierul .txt perfect formatat pentru a deveni fișier resursă. Copiază și conținutul relevant din interacțiunea cu Arhitectul pe marginea materialului procesat.
                 </li>
             </ol>
