@@ -1,7 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Aceasta este configurația corectă pentru versiunile noi de Next.js
-  serverExternalPackages: ['pdf-parse'],
-};
+const nextConfig = {};
 
 export default nextConfig;
