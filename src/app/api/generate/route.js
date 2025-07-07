@@ -1,9 +1,8 @@
-// Fișier: src/app/api/generate/route.js - Versiune pentru deploy pe Render
+// Fișier: src/app/api/generate/route.js - Versiune cu debugging îmbunătățit
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import pdf from 'pdf-parse';
-
 
 // Metapromptul complet, gata de utilizare
 const metaprompt = `
@@ -54,6 +53,15 @@ Folosește următoarea structură Markdown. Pentru fiecare element extras, trebu
 
 export async function POST(request) {
   try {
+    // Verifică dacă API key-ul există
+    if (!process.env.GOOGLE_API_KEY) {
+      console.error("GOOGLE_API_KEY nu este setat!");
+      return NextResponse.json({ 
+        success: false, 
+        error: "Configurația API nu este completă. Contactați administratorul." 
+      }, { status: 500 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file');
 
@@ -61,14 +69,24 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: "Niciun fișier încărcat." }, { status: 400 });
     }
 
+    console.log(`Processing file: ${file.name}, type: ${file.type}, size: ${file.size}`);
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
     let textContent = '';
 
     if (file.type === 'application/pdf') {
-      const data = await pdf(buffer);
-      textContent = data.text;
+      try {
+        const data = await pdf(buffer);
+        textContent = data.text;
+      } catch (pdfError) {
+        console.error("Eroare la parsarea PDF:", pdfError);
+        return NextResponse.json({ 
+          success: false, 
+          error: "Nu s-a putut procesa fișierul PDF. Verificați dacă fișierul nu este corupt." 
+        }, { status: 400 });
+      }
     } else if (file.type === 'text/plain') {
       textContent = buffer.toString('utf-8');
     } else {
@@ -79,21 +97,69 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: "Nu s-a putut extrage text din fișier." }, { status: 400 });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
-    
-    // Trimitem textul extras direct, fără funcția de curățare
-    const finalPrompt = `${metaprompt}\n\n---\n\nTEXT SURSĂ DE ANALIZAT:\n\n${textContent}`;
-    
-    const result = await model.generateContent(finalPrompt);
-    const response = await result.response;
-    const aiTextResponse = response.text();
+    // Verifică dimensiunea textului
+    const textLength = textContent.length;
+    console.log(`Text extracted, length: ${textLength} characters`);
 
-    return NextResponse.json({ success: true, data: aiTextResponse });
+    // Limitează textul dacă e prea lung (Gemini Pro are limite)
+    const MAX_TEXT_LENGTH = 30000; // ~30k caractere pentru siguranță
+    if (textLength > MAX_TEXT_LENGTH) {
+      console.log(`Text prea lung (${textLength}), se truncă la ${MAX_TEXT_LENGTH}`);
+      textContent = textContent.substring(0, MAX_TEXT_LENGTH) + "\n\n[NOTA: Textul a fost truncat din cauza limitărilor tehnice]";
+    }
+
+    try {
+      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+      
+      const finalPrompt = `${metaprompt}\n\n---\n\nTEXT SURSĂ DE ANALIZAT:\n\n${textContent}`;
+      
+      console.log("Sending request to Google AI...");
+      const result = await model.generateContent(finalPrompt);
+      const response = await result.response;
+      const aiTextResponse = response.text();
+
+      console.log("AI response received successfully");
+      return NextResponse.json({ success: true, data: aiTextResponse });
+
+    } catch (aiError) {
+      console.error("Eroare Google AI:", aiError);
+      
+      // Verifică diferite tipuri de erori
+      if (aiError.message?.includes('API key')) {
+        return NextResponse.json({ 
+          success: false, 
+          error: "Problemă cu autentificarea API. Contactați administratorul." 
+        }, { status: 500 });
+      }
+      
+      if (aiError.message?.includes('quota') || aiError.message?.includes('rate')) {
+        return NextResponse.json({ 
+          success: false, 
+          error: "Serviciul este temporar indisponibil din cauza limitărilor. Încercați din nou în câteva minute." 
+        }, { status: 429 });
+      }
+      
+      if (aiError.message?.includes('content')) {
+        return NextResponse.json({ 
+          success: false, 
+          error: "Conținutul documentului nu poate fi procesat. Încercați un fișier mai mic sau diferit." 
+        }, { status: 400 });
+      }
+
+      // Eroare generică
+      return NextResponse.json({ 
+        success: false, 
+        error: `Eroare la procesarea cu AI: ${aiError.message || 'Eroare necunoscută'}` 
+      }, { status: 500 });
+    }
 
   } catch (error) {
-    console.error("Eroare în /api/generate:", error);
+    console.error("Eroare generală în /api/generate:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ success: false, error: `A apărut o eroare la procesarea fișierului: ${errorMessage}` }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      error: `A apărut o eroare la procesarea fișierului: ${errorMessage}` 
+    }, { status: 500 });
   }
 }
